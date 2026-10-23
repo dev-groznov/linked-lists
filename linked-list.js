@@ -34,6 +34,7 @@ class LinkedList {
     size() {
         let cnt = 1
         let curNode = this.headNode
+
         while (curNode.nextNode !== null) {
             cnt += 1
             curNode = curNode.nextNode
@@ -53,12 +54,12 @@ class LinkedList {
     at(index) {
         let curIndex = 0
         let curNode = this.headNode
-        while (curNode.nextNode !== null) {
+
+        while (curNode !== null) {
             if (index === curIndex) return curNode
             curIndex += 1
             curNode = curNode.nextNode
         }
-        if (index === curIndex) return curNode
     }
 
     pop() {
@@ -71,43 +72,122 @@ class LinkedList {
 
     contains(value) {
         let curNode = this.headNode
-        while (curNode.nextNode !== null) {
+
+        while (curNode !== null) {
             if (value === curNode.value) return true
             curNode = curNode.nextNode
         }
-        if (value === curNode.value) return true
+
         return false
     }
 
     findIndex(value) {
         let curIndex = 0
         let curNode = this.headNode
-        while (curNode.nextNode !== null) {
+
+        while (curNode !== null) {
             if (value === curNode.value) return curIndex
             curIndex += 1
             curNode = curNode.nextNode
         }
-        if (value === curNode.value) return curIndex
+
         return -1
     }
 
     toString() {
         if (this.head === undefined) return ""
         let curNode = this.headNode
-        let res = `( ${curNode.value} ) -> null`
-        while (curNode.nextNode !== null) {
+        let res = ''
+
+        while (curNode !== null) {
+            res += `( ${curNode.value} ) -> `
             curNode = curNode.nextNode
-            res = `( ${curNode.value} ) ` + res
         }
+        res += `null`
+
         return res
+    }
+
+    insert(values, curNode) {
+        for(let value of values) {
+            let newNode = new Node(value, curNode.nextNode)
+            curNode.nextNode = newNode
+            curNode = newNode
+        }
+        return curNode
+    }
+
+    insertAt(index, ...values) {
+        if (index === 0) {
+            this.prepend(values[0])
+            let curNode = this.headNode
+            this.insert(values.splice(1), curNode)
+        } else {
+            let curIndex = 1
+            let curNode = this.headNode
+
+            while (curNode !== null) {
+                if (index === curIndex) {
+                    let isTail = false
+                    if (curNode.nextNode === null) {
+                        isTail = true 
+                    }
+
+                    let newNode = new Node(values[0], curNode.nextNode)
+                    curNode.nextNode = newNode
+                    curNode = newNode
+                    const lastNode = this.insert(values.splice(1), curNode)
+
+                    if (isTail) this.tailNode = lastNode
+
+                    return
+                }
+                curIndex += 1
+                curNode = curNode.nextNode
+            } 
+            throw new RangeError(`Index ${index} is out of bounds`)
+        }       
+    }
+
+    removeAt(index) {
+        if (index === 0) {
+            this.headNode = this.headNode.nextNode
+        } else {
+            let curIndex = 1
+            let curNode = this.headNode
+            while (curNode.nextNode != null) {
+                if (curIndex === index) {
+                    if (curNode.nextNode.nextNode !== null) {
+                        curNode.nextNode = curNode.nextNode.nextNode
+                    } else {
+                        this.tailNode = curNode
+                        curNode.nextNode = null
+                    }
+                    return
+                }
+                curIndex += 1
+                curNode = curNode.nextNode
+            }
+            throw new RangeError(`Index ${index} is out of bounds`)
+        }
     }
 }
 
 class Node {
-    constructor(value) {
+    constructor(value, nextNode) {
         this.value = value || null
-        this.nextNode = null
+        this.nextNode = nextNode || null
     }
 }
+
+const list = new LinkedList();
+
+list.append('dog');
+list.append('cat');
+list.append('parrot');
+list.append('snake');
+
+list.removeAt(3)
+console.log(list.toString())
 
 module.exports = LinkedList
