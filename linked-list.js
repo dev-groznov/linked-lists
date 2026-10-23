@@ -180,14 +180,4 @@ class Node {
     }
 }
 
-const list = new LinkedList();
-
-list.append('dog');
-list.append('cat');
-list.append('parrot');
-list.append('snake');
-
-list.removeAt(3)
-console.log(list.toString())
-
 module.exports = LinkedList
